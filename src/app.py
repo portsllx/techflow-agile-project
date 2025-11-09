@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, render_template_string
-from src import storage
+from . import storage
 
 app = Flask(__name__)
 
