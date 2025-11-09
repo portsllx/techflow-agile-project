@@ -36,8 +36,10 @@ jobs:
     
     # Passo 4: Executar testes com pytest
     - name: 🧪 Executar testes automatizados
+      env:
+        PYTHONPATH: src
       run: |
-        pytest -v --tb=short
+        pytest src/ -v --tb=short
     
     # Passo 5: Verificar qualidade
     - name: ✅ Validação de qualidade
