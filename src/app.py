@@ -1,38 +1,82 @@
-from flask import Flask, request, jsonify, render_template
-from src.storage import TaskStorage
+# app.py
+# Aplicação Flask simples com CRUD para tarefas.
+from flask import Flask, jsonify, request, render_template_string
+import storage
 
 app = Flask(__name__)
-storage = TaskStorage()
+
+LIST_TEMPLATE = '''
+<!doctype html>
+<title>Task Manager — TechFlow</title>
+<h1>Tasks</h1>
+<ul>
+{% for t in tasks %}
+  <li>
+    [{{'X' if t.done else ' '}}] <strong>{{t.title}}</strong> (priority: {{t.priority}}) -
+    <a href="/tasks/{{t.id}}">view</a>
+  </li>
+{% endfor %}
+</ul>
+<h2>Create</h2>
+<form action="/tasks" method="post">
+  <input name="title" placeholder="title" required>
+  <input name="description" placeholder="description">
+  <select name="priority">
+    <option value="low">low</option>
+    <option value="normal" selected>normal</option>
+    <option value="high">high</option>
+  </select>
+  <button type="submit">Create</button>
+</form>
+'''
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    tasks = storage.list_tasks()
+    return render_template_string(LIST_TEMPLATE, tasks=tasks)
 
 @app.route('/tasks', methods=['GET'])
-def get_tasks():
-    tasks = storage.get_all()
-    return jsonify([task.__dict__ for task in tasks])
+def list_tasks():
+    priority = request.args.get('priority')
+    tasks = storage.list_tasks()
+    if priority:
+        tasks = [t for t in tasks if t.get('priority') == priority]
+    return jsonify(tasks)
 
 @app.route('/tasks', methods=['POST'])
 def create_task():
-    data = request.get_json()
-    task = storage.create(data['title'], data['description'])
-    return jsonify(task.__dict__), 201
+    data = request.form or request.json
+    title = data.get('title')
+    description = data.get('description', '')
+    priority = data.get('priority', 'normal')
+    if not title:
+        return jsonify({'error': 'title required'}), 400
+    task = storage.create_task(title, description, priority)
+    return jsonify(task), 201
 
 @app.route('/tasks/<int:task_id>', methods=['GET'])
 def get_task(task_id):
-    task = storage.get_by_id(task_id)
-    if task:
-        return jsonify(task.__dict__)
-    return jsonify({'error': 'Task not found'}), 404
+    task = storage.get_task(task_id)
+    if not task:
+        return jsonify({'error': 'not found'}), 404
+    return jsonify(task)
 
-@app.route('/tasks/priority/<priority>', methods=['GET'])
-def get_tasks_by_priority(priority):
-    tasks = storage.get_by_priority(priority)
-    return jsonify([task.__dict__ for task in tasks])
+@app.route('/tasks/<int:task_id>', methods=['PUT', 'PATCH'])
+def update_task(task_id):
+    data = request.json or {}
+    allowed = {'title','description','done','priority'}
+    update = {k: data[k] for k in data.keys() & allowed}
+    task = storage.update_task(task_id, **update)
+    if not task:
+        return jsonify({'error':'not found'}), 404
+    return jsonify(task)
+
+@app.route('/tasks/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    ok = storage.delete_task(task_id)
+    if not ok:
+        return jsonify({'error':'not found'}), 404
+    return jsonify({'deleted': True})
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-

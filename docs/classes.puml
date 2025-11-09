@@ -1,0 +1,9 @@
+@startuml
+class Task {
+  +int id
+  +string title
+  +string description
+  +bool done
+  +string priority
+}
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+title Diagrama de Casos de Uso - Task Manager
+actor Usuário
+rectangle Sistema {
+  Usuário -- (Criar Tarefa)
+  Usuário -- (Editar Tarefa)
+  Usuário -- (Remover Tarefa)
+  Usuário -- (Listar Tarefas)
+  Usuário -- (Filtrar por Prioridade)
+}
+@enduml

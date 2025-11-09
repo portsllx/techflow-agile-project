@@ -1,10 +1,11 @@
+# models.py
+# Definição simples de "Model" para tarefas (padrão DTO).
 from dataclasses import dataclass
-from typing import Optional
 
 @dataclass
 class Task:
     id: int
     title: str
-    description: str
-    completed: bool = False
-    priority: str = "medium" 
+    description: str = ''
+    done: bool = False
+    priority: str = 'normal'  # low, normal, high

@@ -1,42 +1,40 @@
-from typing import List, Optional
-from src.models import Task
+# storage.py
+# Armazenamento simples em memória para simular persistência.
+from typing import Dict, Any, List
+import itertools
 
-class TaskStorage:
-    def __init__(self):
-        self.tasks: List[Task] = []
-        self.next_id = 1
-    
-    def create(self, title: str, description: str) -> Task:
-        task = Task(id=self.next_id, title=title, description=description)
-        self.tasks.append(task)
-        self.next_id += 1
-        return task
-    
-    def get_all(self) -> List[Task]:
-        return self.tasks.copy()
-    
-    def get_by_id(self, task_id: int) -> Optional[Task]:
-        for task in self.tasks:
-            if task.id == task_id:
-                return task
+_id_counter = itertools.count(1)
+_tasks: Dict[int, Dict[str, Any]] = {}
+
+def list_tasks() -> List[Dict[str, Any]]:
+    return list(_tasks.values())
+
+def create_task(title: str, description: str = '', priority: str = 'normal') -> Dict[str, Any]:
+    tid = next(_id_counter)
+    task = {
+        'id': tid,
+        'title': title,
+        'description': description,
+        'done': False,
+        'priority': priority
+    }
+    _tasks[tid] = task
+    return task
+
+def get_task(task_id: int) -> Dict[str, Any]:
+    return _tasks.get(task_id)
+
+def update_task(task_id: int, **kwargs) -> Dict[str, Any]:
+    task = _tasks.get(task_id)
+    if not task:
         return None
-    
-    def update(self, task_id: int, title: str = None, description: str = None, completed: bool = None) -> Optional[Task]:
-        task = self.get_by_id(task_id)
-        if task:
-            if title is not None:  # Mudança aqui
-                task.title = title
-            if description is not None:  # Mudança aqui
-                task.description = description
-            if completed is not None:
-                task.completed = completed
-            return task
-        return None
-    
-    
-    def delete(self, task_id: int) -> bool:
-        task = self.get_by_id(task_id)
-        if task:
-            self.tasks.remove(task)
-            return True
-        return False
+    task.update(kwargs)
+    return task
+
+def delete_task(task_id: int) -> bool:
+    return _tasks.pop(task_id, None) is not None
+
+def clear_storage():
+    global _tasks, _id_counter
+    _tasks = {}
+    _id_counter = itertools.count(1)
