@@ -3,7 +3,7 @@ Testes automatizados para validação de entradas
 e funcionalidades do TechFlow Task Manager
 """
 import pytest
-from app import app
+from src.app import app
 
 @pytest.fixture
 def client():
