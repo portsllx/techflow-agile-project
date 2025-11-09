@@ -1,14 +1,22 @@
-# app.py
-# Aplicação Flask simples com CRUD para tarefas.
 from flask import Flask, jsonify, request, render_template_string
 import storage
 
 app = Flask(__name__)
 
+# Template atualizado com filtro de status
 LIST_TEMPLATE = '''
 <!doctype html>
 <title>Task Manager — TechFlow</title>
 <h1>Tasks</h1>
+
+<!-- MUDANÇA DE ESCOPO: Filtro por status -->
+<div style="margin-bottom: 20px; padding: 10px; background: #f0f0f0;">
+  <strong>Filter by status:</strong>
+  <a href="/">All</a> |
+  <a href="/?status=pending">Pending</a> |
+  <a href="/?status=done">Done</a>
+</div>
+
 <ul>
 {% for t in tasks %}
   <li>
@@ -17,6 +25,7 @@ LIST_TEMPLATE = '''
   </li>
 {% endfor %}
 </ul>
+
 <h2>Create</h2>
 <form action="/tasks" method="post">
   <input name="title" placeholder="title" required>
@@ -32,15 +41,33 @@ LIST_TEMPLATE = '''
 
 @app.route('/')
 def index():
+    # MUDANÇA DE ESCOPO: Aplicar filtro de status na página inicial
+    status = request.args.get('status')
     tasks = storage.list_tasks()
+    
+    if status == 'done':
+        tasks = [t for t in tasks if t.get('done') == True]
+    elif status == 'pending':
+        tasks = [t for t in tasks if t.get('done') == False]
+    
     return render_template_string(LIST_TEMPLATE, tasks=tasks)
 
 @app.route('/tasks', methods=['GET'])
 def list_tasks():
     priority = request.args.get('priority')
+    status = request.args.get('status')  # MUDANÇA DE ESCOPO: Novo parâmetro
     tasks = storage.list_tasks()
+    
+    # Filtro por prioridade (já existente)
     if priority:
         tasks = [t for t in tasks if t.get('priority') == priority]
+    
+    # MUDANÇA DE ESCOPO: Filtro por status de conclusão
+    if status == 'done':
+        tasks = [t for t in tasks if t.get('done') == True]
+    elif status == 'pending':
+        tasks = [t for t in tasks if t.get('done') == False]
+    
     return jsonify(tasks)
 
 @app.route('/tasks', methods=['POST'])

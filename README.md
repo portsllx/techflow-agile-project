@@ -18,3 +18,15 @@ Aplicação Flask simples para gerenciar as tarefas.
 
 ## Documentação
 Diagramas UML disponíveis na pasta `/docs`
+
+## Mudança no Escopo
+Houve necessidade de atribuição implementar um sistema de filtro de status de tarefas.
+
+Filtro por Status de Tarefas
+O que foi adicionado:
+
+Filtro visual na interface web com três opções:
+
+All (Todas): Exibe todas as tarefas
+Pending (Pendentes): Exibe apenas tarefas não concluídas
+Done (Concluídas): Exibe apenas tarefas finalizadas
