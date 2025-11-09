@@ -27,6 +27,8 @@ O que foi adicionado:
 
 Filtro visual na interface web com três opções:
 
-All (Todas): Exibe todas as tarefas
-Pending (Pendentes): Exibe apenas tarefas não concluídas
-Done (Concluídas): Exibe apenas tarefas finalizadas
+All (Todas): Exibe todas as tarefas,
+
+Pending (Pendentes): Exibe apenas tarefas não concluídas,
+
+Done (Concluídas): Exibe apenas tarefas finalizadas.
