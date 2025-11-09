@@ -4,7 +4,7 @@
 
 ## Escopo Inicial
 - Sistema web básico para gerenciamento de tarefas (CRUD).
-- Kanban no GitHub Projects com colunas: A Fazer, Em Progresso, Concluído.
+- Kanban no GitHub Projects com colunas: To do, Doing, .
 - CI com GitHub Actions rodando testes automatizados (pytest).
 - Histórico de commits semânticos.
 - Simulação de mudança de escopo: adicionar campo `priority` e filtro por prioridade.
@@ -29,3 +29,8 @@ COMMITS.md
 README.md
 ```
 
+<<<<<<< HEAD
+=======
+## Testes
+Utilizado o pytest para automatização.
+>>>>>>> 21a01db (leia-me)
